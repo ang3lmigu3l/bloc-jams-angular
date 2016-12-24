@@ -1,6 +1,6 @@
 (function() {
 
-    function SongPlayer(Fixtures) {
+    function SongPlayer($rootScope, Fixtures) {
         var SongPlayer = {};
         /*
         *@desc stores songs from current album 
@@ -28,6 +28,11 @@
             currentBuzzObject = new buzz.sound(song.audioUrl, {
                 formats: ['mp3'],
                 preload: true
+            });
+            currentBuzzObject.bind('timeupdate', function() {
+                $rootScope.$apply(function() {
+                    SongPlayer.currentTime = currentBuzzObject.getTime();
+                });
             });
 
             SongPlayer.currentSong = song;
@@ -64,6 +69,11 @@
         */
         SongPlayer.currentSong = null;
         
+        /*@desc sets playback time (in seconds) of currently playing song 
+        *@type {number}
+        *
+        */
+        SongPlayer.currentTime = null;
         /*
         *@function SongPlayer.play (public)
         *@desc checks if clicked song is not the same as the currentsong , if so then it will play new song and set it as currentSong. if its the same song , it will pause it instead.
@@ -80,6 +90,16 @@
                     playSong(song);
                 }
             }
+        };
+        /*
+        *@function setCurrentTime
+        *@desc sets current time ( in seconds) of currently playing *Song
+        *@param {number} time
+        */
+        SongPlayer.setCurrentTime = function(time) {
+           if (currentBuzzObject) {
+               currentBuzzObject.setTime(time);
+           }  
         };
         /*
         *@function SongPlayer.previous(public)
@@ -136,7 +156,8 @@
 
     angular
         .module("blocJams")
-        .factory('SongPlayer', SongPlayer);
+         .factory('SongPlayer', ['$rootScope', 'Fixtures', SongPlayer]);
+
 })();
 
 
