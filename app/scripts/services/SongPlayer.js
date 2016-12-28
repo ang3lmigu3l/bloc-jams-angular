@@ -19,6 +19,7 @@
         @param {Object} song
         */
         
+        
          var setSong = function(song) {
             if (currentBuzzObject) {
                 currentBuzzObject.stop();
@@ -29,10 +30,18 @@
                 formats: ['mp3'],
                 preload: true
             });
+            
+            currentBuzzObject.setVolume(SongPlayer.volume);
             currentBuzzObject.bind('timeupdate', function() {
                 $rootScope.$apply(function() {
                     SongPlayer.currentTime = currentBuzzObject.getTime();
                 });
+            });
+             
+            currentBuzzObject.bind('volumechange', function() {
+              $rootScope.$apply(function() {
+                SongPlayer.volume = currentBuzzObject.getVolume();
+              });
             });
 
             SongPlayer.currentSong = song;
@@ -74,6 +83,15 @@
         *
         */
         SongPlayer.currentTime = null;
+        
+        
+        SongPlayer.volume = 75 ;
+        
+        SongPlayer.setVolume = function(volume) {
+            if ( currentBuzzObject) {
+                currentBuzzObject.setVolume(volume);
+            }   
+        };
         /*
         *@function SongPlayer.play (public)
         *@desc checks if clicked song is not the same as the currentsong , if so then it will play new song and set it as currentSong. if its the same song , it will pause it instead.
